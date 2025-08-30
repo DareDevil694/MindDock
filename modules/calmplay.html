@@ -1,0 +1,42 @@
+<h2>🧘 CalmPlay: Soothing Mini-Games</h2>
+
+<table class="game-table">
+  <tr>
+    <!-- Zen Garden Card -->
+    <td>
+      <div class="game-card" onclick="toggleGame('zenGarden')">
+        <h3>Zen Garden</h3>
+        <p>Design your peaceful space</p>
+      </div>
+      <div id="zenGarden" class="game-content hidden">
+        <iframe
+          src="https://example.com/zen-garden"
+          title="Zen Garden"
+          width="100%"
+          height="300"
+          frameborder="0"
+          allowfullscreen
+        ></iframe>
+      </div>
+    </td>
+
+    <!-- Breath Sync Card -->
+    <td>
+      <div class="game-card" onclick="toggleGame('breathSync')">
+        <h3>Breath Sync</h3>
+        <p>Match your breath to the rhythm</p>
+      </div>
+      <div id="breathSync" class="game-content hidden">
+        <iframe
+          id="breathSyncFrame"
+          src="modules/breath-sync/index.html"
+          title="Breath Sync"
+          width="100%"
+          height="300"
+          frameborder="0"
+        ></iframe>
+        <button id="startBreathingBtn" class="start-btn">Start Breathing</button>
+      </div>
+    </td>
+  </tr>
+</table>

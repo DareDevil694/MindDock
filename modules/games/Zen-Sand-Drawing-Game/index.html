@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>ZenFlow — Sand Meditation</title>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600&family=Playfair+Display:wght@700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+  <div class="container">
+    <h1>ZenFlow</h1>
+    <p id="dailyQuote" class="subtitle"></p>
+
+    <div class="controls">
+      <label>Sand Color: <input type="color" id="colorPicker" value="#f4e04d" /></label>
+      <label>Brush Size: <input type="range" id="brushSize" min="1" max="10" value="3" /></label>
+      <button id="resetBtn">Reset</button>
+      <button id="undoBtn">Undo</button>
+      <button id="redoBtn">Redo</button>
+      <button id="saveBtn">Save</button>
+      <button id="galleryBtn">Gallery</button>
+      <label><input type="checkbox" id="symmetryToggle" /> Symmetry Mode</label>
+    </div>
+
+    <canvas id="sandCanvas"></canvas>
+  </div>
+
+  <div id="galleryModal" class="modal hidden">
+    <div class="modal-content">
+      <h2>Your Zen Gallery</h2>
+      <div id="galleryGrid" class="gallery-grid"></div>
+      <button id="closeGallery">Close</button>
+    </div>
+  </div>
+
+  <audio id="zenAudio" src="sounds/roblox-minecraft-fortnite-video-game-music-358426.mp3" loop></audio>
+  <button id="muteBtn" class="mute-button">🔈</button>
+
+  <script src="app.js"></script>
+</body>
+</html>

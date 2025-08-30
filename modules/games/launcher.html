@@ -1,0 +1,126 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>CalmPlay Game Launcher</title>
+  <style>
+    body {
+      font-family: 'Segoe UI', sans-serif;
+      background: linear-gradient(to bottom, #eaf6ff, #fdf6f0);
+      padding: 40px;
+      color: #333;
+    }
+
+    h2 {
+      font-size: 2em;
+      margin-bottom: 20px;
+      text-align: center;
+    }
+
+    ul.game-launch-list {
+      list-style: none;
+      padding: 0;
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+      gap: 20px;
+    }
+
+    ul.game-launch-list li {
+      background: #ffffff;
+      padding: 16px;
+      border-radius: 12px;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.08);
+      transition: transform 0.2s ease;
+      text-align: center;
+    }
+
+    ul.game-launch-list li:hover {
+      transform: scale(1.03);
+    }
+
+    ul.game-launch-list a {
+      text-decoration: none;
+      color: #0077cc;
+      font-weight: 500;
+      font-size: 1em;
+    }
+
+    /* Splash Screen */
+    #splash-screen {
+      position: fixed;
+      top: 0; left: 0;
+      width: 100vw; height: 100vh;
+      background: #fff;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      z-index: 9999;
+      transition: opacity 1s ease;
+    }
+
+    #splash-screen img {
+      width: 120px;
+      opacity: 0;
+      animation: fadeIn 2s ease forwards;
+    }
+
+    @keyframes fadeIn {
+      to { opacity: 1; }
+    }
+  </style>
+</head>
+<body>
+  <!-- Splash Screen -->
+  <div id="splash-screen">
+    <img src="../../assets/logo.png" alt="MindDock Logo" />
+  </div>
+
+  <script>
+    window.addEventListener('load', () => {
+      setTimeout(() => {
+        document.getElementById('splash-screen').style.opacity = '0';
+        setTimeout(() => {
+          document.getElementById('splash-screen').style.display = 'none';
+        }, 1000);
+      }, 2000);
+    });
+  </script>
+
+  <h2>🎮 CalmPlay Game Launcher</h2>
+  <ul class="game-launch-list">
+    <li><a href="../games/01-Candy-Crush-Game/index.html" target="_blank">🍬 Candy Crush</a></li>
+    <li><a href="../games/02-Archery-Game/index.html" target="_blank">🏹 Archery</a></li>
+    <li><a href="../games/03-Speed-Typing-Game/index.html" target="_blank">⌨️ Speed Typing</a></li>
+    <li><a href="../games/04-Breakout-Game/index.html" target="_blank">🧱 Breakout</a></li>
+    <li><a href="../games/05-Minesweeper-Game/index.html" target="_blank">💣 Minesweeper</a></li>
+    <li><a href="../games/06-Tower-Blocks/index.html" target="_blank">🏗️ Tower Blocks</a></li>
+    <li><a href="../games/07-Ping-Pong-Game/index.html" target="_blank">🏓 Ping Pong</a></li>
+    <li><a href="../games/08-Tetris-Game/index.html" target="_blank">🧩 Tetris</a></li>
+    <li><a href="../games/09-Tilting-Maze-Game/index.html" target="_blank">🌀 Tilting Maze</a></li>
+    <li><a href="../games/10-Memory-Card-Game/index.html" target="_blank">🧠 Memory Cards</a></li>
+    <li><a href="../games/11-Rock-Paper-Scissors/index.html" target="_blank">✊✋✌️ RPS</a></li>
+    <li><a href="../games/12-Type-Number-Guessing-Game/index.html" target="_blank">🔢 Number Guess</a></li>
+    <li><a href="../games/13-Tic-Tac-Toe/index.html" target="_blank">⭕❌ Tic Tac Toe</a></li>
+    <li><a href="../games/14-Snake-Game/index.html" target="_blank">🐍 Snake</a></li>
+    <li><a href="../games/15-Connect-Four-Game/index.html" target="_blank">🔴🟡 Connect Four</a></li>
+    <li><a href="../games/16-Insect-Catch-Game/index.html" target="_blank">🐞 Insect Catch</a></li>
+    <li><a href="../games/17-Typing-Game/index.html" target="_blank">📝 Typing Game</a></li>
+    <li><a href="../games/18-Hangman-Game/index.html" target="_blank">🪢 Hangman</a></li>
+    <li><a href="../games/19-Flappy-Bird-Game/index.html" target="_blank">🐦 Flappy Bird</a></li>
+    <li><a href="../games/20-Crossy-Road-Game/index.html" target="_blank">🚗 Crossy Road</a></li>
+    <li><a href="../games/21-2048-Game/index.html" target="_blank">🧮 2048</a></li>
+    <li><a href="../games/22-Dice-Roll-Simulator/index.html" target="_blank">🎲 Dice Roll</a></li>
+    <li><a href="../games/23-Shape-Clicker-Game/index.html" target="_blank">🔷 Shape Clicker</a></li>
+    <li><a href="../games/24-Typing-Game/index.html" target="_blank">⌨️ Typing Game 2</a></li>
+    <li><a href="../games/25-Speak-Number-Guessing-Game/index.html" target="_blank">🎙️ Speak & Guess</a></li>
+    <li><a href="../games/26-Fruit-Slicer-Game/index.html" target="_blank">🍉 Fruit Slicer</a></li>
+    <li><a href="../games/27-Quiz-Game/index.html" target="_blank">❓ Quiz Game</a></li>
+    <li><a href="../games/28-Emoji-Catcher-Game/index.html" target="_blank">😄 Emoji Catcher</a></li>
+    <li><a href="../games/29-Whack-A-Mole-Game/index.html" target="_blank">🔨 Whack-a-Mole</a></li>
+    <li><a href="../games/30-Simon-Says-Game/index.html" target="_blank">🗣️ Simon Says</a></li>
+    <li><a href="../games/NightTime-Highway-master/index.html" target="_blank">🌃 NightTime Highway</a></li>
+    <li><a href="../games/spill-paint-game-main/index.html" target="_blank">🎨 Spill Paint</a></li>
+    <li><a href="../games/Zen-Sand-Drawing-Game/index.html" target="_blank">🏖️ Zen Sand Drawing</a></li>
+  </ul>
+</body>
+</html>

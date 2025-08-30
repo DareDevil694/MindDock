@@ -1,0 +1,115 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>MindDock</title>
+  <link rel="stylesheet" href="style.css">
+  <script defer src="script.js"></script>
+</head>
+<body>
+  <!-- Splash Screen -->
+  <div id="splash-screen">
+    <img src="assets/logo.png" alt="MindDock Logo" />
+  </div>
+
+  <div class="sidebar">
+    <h1>🧘 MindDock</h1>
+    <ul>
+      <li><a href="#calmplay">CalmPlay</a></li>
+      <li><a href="#soundnest">SoundNest</a></li>
+      <li><a href="#moodjournal">Mood Journal</a></li>
+      <li><a href="#focusdock">FocusDock</a></li>
+      <li><a href="#support">Support</a></li>
+    </ul>
+  </div>
+
+  <div class="main-content">
+    <div class="welcome-card">
+      <h2>Welcome to MindDock 🧘</h2>
+      <p>Your personal calm dashboard—breathe, reflect, reset.</p>
+    </div>
+
+    <!-- CalmPlay Section -->
+    <div class="section" id="calmplay">
+      <h2>🧘 CalmPlay</h2>
+      <table class="game-table">
+        <tr>
+          <td>
+            <div class="game-card" onclick="openGame('gameLauncher')">
+  <h3>🧘 CalmPlay Arcade</h3>
+  <p>Explore all calming games in one place</p>
+</div>
+
+
+    <!-- Modal Container -->
+    <div id="gameModal" class="modal hidden">
+      <div class="modal-content">
+        <span class="close-btn" onclick="closeGame()">×</span>
+        <iframe id="gameFrame" src="" frameborder="0"></iframe>
+      </div>
+    </div>
+
+    <!-- SoundNest Section -->
+    <div class="section" id="soundnest">
+      <h2>🎧 SoundNest</h2>
+      <iframe
+        style="border-radius:12px"
+        src="https://open.spotify.com/embed/playlist/7JVfZlSw21ahqGbwwoNaJk?utm_source=generator"
+        width="100%"
+        height="352"
+        frameborder="2"
+        allow="autoplay; clipboard-write; encrypted-media; fullscreen; picture-in-picture"
+        loading="lazy">
+      </iframe>
+    </div>
+
+    <!-- Mood Journal Section -->
+    <div class="section" id="moodjournal">
+      <h2>📝 Mood Journal</h2>
+      <p>How are you feeling today?</p>
+      <select>
+        <option>😊 Happy</option>
+        <option>😐 Neutral</option>
+        <option>😔 Sad</option>
+        <option>😠 Frustrated</option>
+      </select>
+      <textarea placeholder="Write your thoughts here..." rows="5" style="width:100%; margin-top:10px;"></textarea>
+    </div>
+
+    <!-- FocusDock Section -->
+    <div class="section" id="focusdock">
+      <h2>⏳ FocusDock</h2>
+      <p>Start a Pomodoro session:</p>
+      <button onclick="startTimer()">Start 25-min Focus</button>
+      <button onclick="pauseTimer()">Pause</button>
+      <button onclick="stopTimer()">Stop</button>
+      <div id="timerDisplay" style="margin-top:10px; font-size:1.5em;"></div>
+    </div>
+
+    <!-- Support Section -->
+    <div class="section" id="support">
+      <h2>💸 Support MindDock</h2>
+      <p>If you love this dashboard, consider supporting it!</p>
+      <a href="https://ko-fi.com/yourlink" target="_blank">Buy Me a Coffee ☕</a>
+    </div>
+  </div>
+
+  <script>
+    function toggleGame(id) {
+      const game = document.getElementById(id);
+      game.classList.toggle('hidden');
+    }
+
+    document.addEventListener("DOMContentLoaded", () => {
+      const startBtn = document.getElementById("startBreathingBtn");
+      const iframe = document.getElementById("breathSyncFrame");
+
+      if (startBtn && iframe) {
+        startBtn.addEventListener("click", () => {
+          iframe.contentWindow.postMessage("startBreathSync", "*");
+        });
+      }
+    });
+  </script>
+</body>
+</html>

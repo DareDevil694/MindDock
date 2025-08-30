@@ -1,0 +1,629 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="icon" type="image/x-svg" href="/img/favicon.svg">
+    <script>navigator.serviceWorker.register("service-worker.js")</script> 
+    <link rel="manifest" href="manifest.json" />    
+    <title>Spill paint : game &copy; Kunal Khatri</title>
+</head>
+<body>
+        <div class="modal-wrapper" id="modal-wrapper-new-game" >
+        <div class="modal-window">
+            <img class="help-close-button" src="img/close.svg" alt="Close modal window" onclick="document.getElementById('modal-wrapper-new-game').style.display='none';" />
+            <div class="victory-message"></div>
+            <div class="game_mode_selector">
+                <input type="radio" id="game_easy" name="game-level" onclick="set_game_mode(5);"><label for="game_easy">Easy [5x5]</label>
+                <input type="radio" id="game_medium" name="game-level" checked onclick="set_game_mode(10);"><label for="game_medium">Medium [10x10]</label>
+                <input type="radio" id="game_hard" name="game-level" onclick="set_game_mode(15);"><label for="game_hard">Hard [15x15]</label>
+            </div>
+            <button class="btn primary" onclick="setup_board();">Start Game</button>
+            <div class="high-scores">
+                <h4>Previous High Scores</h4>
+                <div class="score-values">
+                    <span>Easy</span><span id="score-easy-figure" ></span>
+                    <span>Medium</span><span id="score-normal-figure"></span>
+                    <span>Hard</span><span id="score-hard-figure"></span>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div id="help">
+        <div class="content">
+            <img src="img/close.svg" alt="close help box" class="help-close-button" onclick="document.querySelector('#help').classList.toggle('shown');" width="40"/>
+            <img src="img/image.png" height="300" width="200" />
+            <b>Fill the board with all the same colour paint in smallest number of moves.</b>
+            <span>Click the paint buttons at bottom to spill a new paint colour onto the board starting in the top-left colour. <br/>Newly Adjancent squares of the same colour add to the total filled space.</span>
+        </div>
+    </div>
+    <workspace>
+        <div class="title">
+            Paint Spill game
+        </div>
+        <div class="info-box">
+            <div class="title-score">
+                <div class="score">
+                    Moves used <span class='score-figure'>0</span>
+                </div>
+                <div class="show_icons_wrapper">
+                    <label for="accesibility_checkbox"><input type="checkbox" id="accesibility_checkbox" onchange="javascript:toggle_accesibility();" > Show icons</label>
+                </div>
+            </div>
+            <div class="action_buttons">
+                <img src="img/refresh.svg" alt="new game" onclick="document.querySelector('.modal-wrapper').style.display='';" width="40" >
+                <img src="img/help.svg" alt="help button" onclick="document.querySelector('#help').classList.toggle('shown');" width="40" >
+            </div>
+        </div>
+        <div class="playground" id="playground">
+        </div>
+        <div class="color-pots">
+            <div class="color-pot" >
+                <img class="accesbility_box" />
+            </div> 
+            <div class="color-pot" >
+                <img class="accesbility_box" />
+            </div> 
+            <div class="color-pot" >
+                <img class="accesbility_box" />
+            </div> 
+            <div class="color-pot" >
+                <img class="accesbility_box" />
+            </div> 
+            <div class="color-pot" >
+                <img class="accesbility_box" />
+            </div> 
+            <div class="color-pot" >
+                <img class="accesbility_box" />
+            </div> 
+        </div>
+    </workspace>
+    <script>
+        var moves_used = 0;
+        var grid_size = 10;
+        const color_array = [
+        {
+                color:'#FF1500',
+                icon : "img/accesibility/icon-1.svg"
+            },
+            {
+                color:'#f9c440',
+                icon : "img/accesibility/icon-2.svg"
+            },
+            {
+                color:'#68b723',
+                icon : "img/accesibility/icon-3.svg"
+            },
+            {
+                color:'#3689e6',
+                icon : "img/accesibility/icon-4.svg"
+            },
+            {
+                color:'#a56de2',
+                icon : "img/accesibility/icon-5.svg"
+            },
+            {
+                color:'#C16700',
+                icon : "img/accesibility/icon-6.svg"
+            }
+        ];
+
+        var previous_color = "";
+
+        function setup_board(event=null) {
+
+            document.querySelectorAll(".color-pot").forEach((el,i)=>{
+                let box_icon  = color_array[i].icon;
+                el.style.backgroundColor = color_array[i].color;
+
+                el.setAttribute("data-color",color_array[i].color);
+                el.setAttribute("data-icon", box_icon);
+                el.querySelector(".accesbility_box").src = box_icon;
+                el.addEventListener("click",spill_color);
+
+                el.classList.remove("last_clicked");
+
+            });
+
+
+            const playground = document.getElementById("playground");
+            playground.innerHTML = "";
+            for (let i =0;i<grid_size;i++){
+                let row = document.createElement("div");
+                row.className = "row";
+                for (let j =0;j<grid_size;j++){
+                    let box = document.createElement("div");
+                    box.className="box";
+                    let color_index = parseInt(Math.random()*color_array.length);
+                    let box_color = color_array[color_index].color;
+                    let box_icon  = color_array[color_index].icon;
+                    box.setAttribute("data-color",box_color);
+                    box.setAttribute("data-icon",box_icon)
+                    box.setAttribute("data-identifiers",`${i}-${j}`);
+                        let access_box = document.createElement("img");
+                        access_box.classList.add("accesbility_box");
+                        access_box.src = box_icon;
+                    box.appendChild(access_box);
+                    box.style.backgroundColor = box_color;
+                    row.appendChild(box);
+                }
+                playground.appendChild(row);
+            }
+            if (event==null){
+                document.querySelector(".modal-wrapper").style.display="none";
+            }
+            document.querySelector(".modal-wrapper .victory-message").innerHTML="";
+            update_high_scores_display();
+            moves_used = 0;
+            update_score();
+
+            // accesibility from localStorage
+            let previous_accesibility_value = window.localStorage.getItem("accesibility_show_icons");
+            if(previous_accesibility_value == null ) {
+                window.localStorage.setItem("accesibility_show_icons","false");
+                previous_accesibility_value = "false";
+            }
+
+            if (previous_accesibility_value  == "true"){
+                document.querySelector("#accesibility_checkbox").setAttribute("checked",true);
+            }
+            else {
+                document.querySelector("#accesibility_checkbox").removeAttribute("checked");
+            }
+            toggle_accesibility();
+
+
+
+        }
+
+        var user_high_scores;
+        function update_high_scores_display(){
+            // finding previous high scores
+            const prev_high_scores = window.localStorage.getItem("high_scores");
+            if (prev_high_scores){
+                user_high_scores = JSON.parse(prev_high_scores);
+                document.getElementById("score-easy-figure").innerText = user_high_scores.easy??"--";
+                document.getElementById("score-normal-figure").innerText = user_high_scores.normal??"--";
+                document.getElementById("score-hard-figure").innerText = user_high_scores.hard??"--";
+            } else {
+                window.localStorage.setItem("high_scores",JSON.stringify({
+                    easy:null,
+                    normal:null,
+                    hard:null
+                }));
+                update_high_scores_display();
+            }
+        }
+
+        function update_high_score_localstorage(){
+            const current_mode = {5:"easy",10:"normal",15:"hard"}[grid_size];
+            if (user_high_scores[current_mode] > moves_used || user_high_scores[current_mode] == null){
+                user_high_scores[current_mode] = moves_used;
+                window.localStorage.setItem("high_scores",JSON.stringify(user_high_scores));
+                update_high_scores_display();
+            }
+        }
+        function set_game_mode(tiles=10){
+            grid_size = tiles;
+        }
+        function spill_color(event){
+            let color_box = event.target;
+            document.querySelectorAll(".color-pot").forEach(el=>el.classList.remove("last_clicked"));
+            color_box.classList.add("last_clicked");
+            let color_to_spread = color_box.getAttribute("data-color");
+            let icon_to_spread = color_box.getAttribute("data-icon");
+            
+            
+            let first_box = document.querySelector(".playground .row:first-of-type .box:first-of-type");
+            previous_color = getcolor(first_box).color;
+
+            // to be done, check if the color clicked is different from what already is
+            if (color_to_spread == previous_color){
+                return;
+            }
+
+            moves_used ++;
+            update_score();
+            setcolor(first_box,color_to_spread,icon_to_spread);
+
+            spill_to_adjacent_boxes(first_box);
+
+            let victory = check_if_game_over()
+            if (victory){
+                do_a_victory_lap();
+            }
+        }
+
+        function do_a_victory_lap(){
+
+            document.querySelector(".modal-wrapper .victory-message").innerHTML = `Victory in ${moves_used} moves.`;
+            document.querySelector(".modal-wrapper").style.display="";
+            confetti({
+                particleCount: 1000,
+                spread: 100,
+                origin: { y: 1,x:0.5 },
+            });
+            // updating high scores
+            update_high_score_localstorage();
+
+        }
+        function check_if_game_over(){
+            let color_pending = new Set();
+            document.querySelectorAll(".box").forEach(box=>color_pending.add(getcolor(box).color));
+            return (color_pending.size == 1);
+        }
+
+        function update_score(){
+            const score_span = document.querySelector(".info-box .score .score-figure");
+            score_span.innerText = moves_used;
+        }
+        function find_adjacent_boxes(box){
+            let return_arary = [];
+            let to_right = box.nextElementSibling;
+            if (to_right) return_arary.push(to_right);
+            let to_left = box.previousElementSibling;
+            if (to_left) return_arary.push(to_left);
+
+            let row_id = parseInt( box.getAttribute("data-identifiers").split("-")[0] );
+            let col_id = parseInt( box.getAttribute("data-identifiers").split("-")[1] );
+
+            let to_top = document.querySelector(`.box[data-identifiers='${row_id - 1}-${col_id}']`);
+            if (to_top) return_arary.push(to_top);
+
+            let to_bottom = document.querySelector(`.box[data-identifiers='${row_id + 1}-${col_id}']`);
+            if (to_bottom) return_arary.push(to_bottom);
+
+            return return_arary;
+        }
+
+        function spill_to_adjacent_boxes(first_box){
+            let adjacent_boxes = find_adjacent_boxes(first_box);
+            var current_color = getcolor(first_box).color;
+            var current_icon  = getcolor(first_box).icon;
+
+            let more_boxes_to_process=[];
+            adjacent_boxes.forEach(box=>{
+                if (getcolor(box).color == previous_color){
+                    setcolor(box,current_color,current_icon);
+                    more_boxes_to_process.push(box);
+                }
+            });
+            more_boxes_to_process.forEach(box=>spill_to_adjacent_boxes(box));
+        }
+
+        function getcolor(box){
+            return {
+                color   : box.getAttribute("data-color"),
+                icon    : box.querySelector(".accesbility_box").src
+            };
+        }
+
+        function setcolor(box,color,icon){
+            box.setAttribute("data-color",color);
+            box.style.backgroundColor = color;
+            box.querySelector(".accesbility_box").src=icon;
+        }
+
+        function toggle_accesibility(){
+            const accesibility = document.querySelector("#accesibility_checkbox").checked;
+            if (accesibility){
+                document.querySelector('.playground').classList.add("show_icons");
+                document.querySelector('.color-pots').classList.add("show_icons");
+                window.localStorage.setItem("previous_accesibility_value","true");
+            }
+            else {
+                document.querySelector('.playground').classList.remove("show_icons");
+                document.querySelector('.color-pots').classList.remove("show_icons");
+
+                window.localStorage.setItem("previous_accesibility_value","false");
+            }
+        }
+    </script>
+    <style>
+        :root {
+            --color-pot-size:50px;
+            --color-pot-size:50px;
+            --gap-between-tiles:1px;
+            --btn-bck-color : #00d1b2;
+        }
+
+        * {
+            padding: 0;
+            margin:0;
+            font-family: BlinkMacSystemFont,-apple-system,"Segoe UI",Roboto,Oxygen,Ubuntu,Cantarell,"Fira Sans","Droid Sans","Helvetica Neue",Helvetica,Arial,sans-serif;
+            box-sizing: border-box;
+        }
+        body {
+            display: flex;
+            align-items: center;
+            justify-content: space-around;
+
+            width: 100%;
+            height: 100svh;
+
+            background-color: #555;
+            overflow-y: auto;
+        }
+
+
+        .credits {
+            position: absolute;
+            bottom: 10px;
+            width: 100vw;
+
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap:20px;
+            z-index: 0;
+        }
+
+
+
+        .credits img {
+            height: 25px;
+        }
+        .modal-wrapper, #help {
+            display: grid;
+            position: absolute;
+            place-content: center;
+            width: 100vw;
+            height: clamp(100svh,100%,100vh);
+
+            backdrop-filter: blur(5px);
+            z-index: 100;
+        }
+
+
+        
+        .modal-wrapper .modal-window, #help .content {
+            height: fit-content;
+            width:300px;
+            background-color: white;
+            border-radius: 10px;
+
+            padding:20px;
+
+            display: flex;
+            flex-flow: column;
+            justify-content: center;
+            gap:20px;
+
+            border:1px solid #000
+        }
+
+        #help .content {
+            align-items: center;
+        }
+
+        .help-close-button {
+            align-self: flex-end;
+            height:40px;
+        }
+        #help {
+            display: none;
+        }
+        #help.shown {
+            display: grid;
+        }
+
+        .modal-wrapper .game_mode_selector {
+            display: flex;
+            flex-flow: row nowrap;
+            gap:.2rem;
+            position: relative;
+
+            font-size: .90em;
+
+            justify-content: space-between;
+        }
+
+        .modal-wrapper .game_mode_selector input{
+            opacity: 0;
+            position: absolute;
+        }
+
+        
+        .modal-wrapper .game_mode_selector label {
+            padding: 5px;
+            border-radius: 5px;
+            display: grid;
+            place-content: center;
+            color:black;
+            background-color: #dadada;
+        }
+        
+        .modal-wrapper .game_mode_selector input:checked + label {
+            background-color: var(--btn-bck-color);
+            color:white;
+            font-weight: bold;
+        }
+
+        .modal-wrapper .high-scores .score-values{
+            display: grid;
+            grid-template-columns: auto auto;
+        }
+
+        workspace {
+            width: clamp(375px,80%,600px);
+
+            border-radius: 5px;
+            background-color: white;
+            box-shadow: rgba(0, 0, 0, 0.24) 0px 3px 8px;
+
+            display: flex;
+            flex-flow: column;
+            overflow: hidden;
+            z-index: 1;
+
+            height: fit-content;
+            max-height: 100%;
+        }
+
+        workspace .title {
+            display: grid;
+            place-content: center;
+            padding:5px;
+            font-weight: bold;
+            background-color: beige;
+        }
+
+        .info-box {
+            display: grid;
+            grid-template-columns: 1fr 100px;
+        }
+
+        .info-box img {
+            cursor: pointer;
+        }
+
+        .info-box div {
+            display: grid;
+            place-content: center;
+        }
+
+        .info-box .title-score {
+            display: flex;
+            flex-flow: row nowrap;
+            align-items: center;
+            gap:20px;
+        }
+
+        .info-box .title-score .score {
+            display: flex;
+            flex-flow: row nowrap;
+            gap:10px;
+
+            align-items: baseline;
+        }
+
+        .info-box .title-score .score .score-figure {
+            font-size: 1.2em;
+            font-weight: bold;
+        }
+
+        .info-box .action_buttons {
+            display: flex;
+            flex-flow:row nowrap;
+        }
+
+        .playground {
+            background-color: #e5e5e5;
+            padding: 40px 20px;
+
+            display: flex;
+            flex-flow: column;
+            gap:var(--gap-between-tiles);
+
+            transition: all ease .24s;
+            overflow: auto;
+
+        }
+
+        workspace.expanded .playground, workspace.expanded .color-pots {
+            max-height: 0;
+            padding: 0;
+        }
+
+        .playground .row {
+            display: flex;
+            flex-flow: row nowrap;
+            gap:var(--gap-between-tiles);
+            align-items: center;
+            justify-content: stretch;
+
+        }
+
+        .playground .row .box {
+            border:1px solid transparent;
+            transition: all ease .24s;
+
+            display: grid;
+            place-content: center;
+            justify-content: stretch;
+            align-content: stretch;
+
+        }
+        .playground .row:first-of-type .box:first-of-type {
+            outline:1px solid black;
+        }
+        .playground .row .box {
+            background-color: red;
+
+            flex-grow: 1;
+            aspect-ratio: 1/1;
+            border-radius: 1px;
+
+            display: grid;
+            place-content: center;
+        }
+
+        .playground .row .box .accesbility_box, .color-pots .color-pot .accesbility_box  {
+            width: 100%;
+            height: fit-content;
+            opacity: 0;
+
+            pointer-events: none;
+            filter: invert(1);
+            transform: scale(.7);
+        }
+
+        .playground.show_icons .row .box .accesbility_box, .color-pots.show_icons .color-pot .accesbility_box {
+            opacity: 1;
+        }
+
+
+        .color-pots {
+            display: flex;
+            flex-flow: row nowrap;
+
+            align-items: center;
+            justify-content: space-evenly;
+
+            padding:20px 0;
+
+            overflow: hidden;
+            transition: all ease .24s;
+
+        }
+
+        .color-pots .color-pot {
+            display: grid;
+            justify-content: stretch;
+            align-content: stretch;
+
+            width: var(--color-pot-size);
+            height: var(--color-pot-size);
+            content: attr(data-color);
+
+            border-radius: 5px;
+            border:1px solid #dadada;
+            cursor: pointer;
+
+            background-position: center;
+            background-size: 70%;
+            background-repeat: no-repeat;
+        }
+
+        .color-pots .color-pot.last_clicked {
+            outline: 2px solid black;
+        }
+
+        button.btn {
+            border-radius: 5px;
+            background-color: var(--btn-bck-color);
+            color:white;
+            padding:10px 12px;
+            border:1px solid #dadada;
+            margin:0;
+
+        }
+
+        #confetti {
+            position: absolute;
+        }
+    </style>
+    <script src="https://cdn.jsdelivr.net/npm/tsparticles-confetti@2.9.3/tsparticles.confetti.bundle.min.js" defer></script>
+</body>
+</html>
